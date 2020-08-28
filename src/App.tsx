@@ -1,25 +1,75 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, useState } from "react";
+
+import "./App.css";
+import {
+  Header,
+  Container,
+  Form,
+  Button,
+  Label,
+  List,
+} from "semantic-ui-react";
+
+type formElement = React.FormEvent<HTMLFormElement>;
+
+interface ITodo {
+  task: string;
+  complete: boolean;
+}
 
 function App() {
+  const [taskValue, setTaskValue] = useState<string>("");
+  const [todos, setTodos] = useState<ITodo[]>([]);
+
+  const handleSubmit = (e: formElement): void => {
+    e.preventDefault();
+    addTodo(taskValue);
+
+    setTaskValue("");
+  };
+
+  const addTodo = (task: string): void => {
+    const newTodos: ITodo[] = [...todos, { task: task, complete: false }];
+    setTodos(newTodos);
+  };
+
+  const handleCompleteTodo = (index: number): void => {
+    const newTodos: ITodo[] = todos;
+    newTodos[index].complete = !newTodos[index].complete;
+    setTodos(newTodos);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <Container>
+        {/* <Header as="h1">Todo List</Header> */}
+        <Form onSubmit={handleSubmit}>
+          <Form.Field>
+            <input
+              type="text"
+              value={taskValue}
+              onChange={(e) => setTaskValue(e.target.value)}
+              placeholder="Task name"
+              required
+            />
+          </Form.Field>
+          <Button type="submit" on>
+            Add
+          </Button>
+        </Form>
+
+        <List divided selection>
+          {todos.map((todo: ITodo, index: number) => {
+            return (
+              <Fragment key={index}>
+                <List.Item>{todo.task}</List.Item>
+                <Button type="button">Complete</Button>
+              </Fragment>
+            );
+          })}
+        </List>
+      </Container>
+    </Fragment>
   );
 }
 
